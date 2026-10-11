@@ -1,9 +1,6 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "Job.h"
-
-#include <cstdint>
 #include <functional>
 #include <map>
 #include <optional>
@@ -14,6 +11,7 @@
 using Value = std::variant<int, std::string>;
 using RequestId = std::string;
 using Store = std::map<std::string, Value>;
+using JobId = std::string;
 
 struct Resources{
     int cpu_cores{0};
@@ -38,10 +36,28 @@ struct Request{
     bool atomic{false};
 };
 
+enum class SubmitStatus {
+  OK, REJECTED_NO_CAPACITY, REJECTED_CLUSTER_DOWN, REJECTED_UNKNOWN_CLUSTER
+};
+struct SubmitResult {
+  SubmitStatus status = SubmitStatus::OK;
+  JobId job_id = "";
+  bool ok() const { return status == SubmitStatus::OK; }
+};
+
+enum class JobEventType { COMPLETED, FAILED };
+struct JobEvent {
+  JobId job_id = "";
+  RequestId request_id;
+  std::string stage_id;
+  JobEventType type = JobEventType::COMPLETED;
+};
+
 using Op = std::function<std::vector<Value>(const std::vector<Value>& inputs,
             const Stage& stage)>;
 
 std::optional<std::reference_wrapper<const Op>> find_op(const std::string& name);
 std::string canonical(const Value& v); /*ai slop*/
+Value default_value();
 
 #endif /*MODEL_H*/

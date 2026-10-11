@@ -1,0 +1,38 @@
+# Build output (matches q1/build and any other build dirs)
+build/
+cmake-build-*/
+out/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+
+# Compiled objects and binaries
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.pdb
+
+# clangd cache/index
+.cache/
+
+# Editor / IDE settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -1,33 +1,36 @@
-#include "model.h"
+#include "Model.h"
 
 #include <stdexcept>
 #include <unordered_map>
+#include <cstdint>
+
+Value default_value() { return 0; }
 
 namespace {
 
 std::string plain(const Value& v) {
-    if (auto p = std::get_if<int64_t>(&v)) return std::to_string(*p);
+    if (auto p = std::get_if<int>(&v)) return std::to_string(*p);
     return std::get<std::string>(v);
 }
 
 std::vector<Value> broadcast(Value v, size_t n) { return std::vector<Value>(n, std::move(v)); }
 
-// Sum of integer inputs (strings count as 0). Wraps on overflow, never throws.
+
 std::vector<Value> op_add(const std::vector<Value>& in, const Stage& st) {
     uint64_t sum = 0;
     for (const auto& v : in)
-        if (auto p = std::get_if<int64_t>(&v)) sum += static_cast<uint64_t>(*p);
+        if (auto p = std::get_if<int>(&v)) sum += static_cast<uint64_t>(*p);
     return broadcast(static_cast<int>(sum), st.writes.size());
 }
 
-// Concatenation of inputs' plain text, in read order.
+
 std::vector<Value> op_concat(const std::vector<Value>& in, const Stage& st) {
     std::string s;
     for (const auto& v : in) s += plain(v);
     return broadcast(std::move(s), st.writes.size());
 }
 
-// FNV-1a 64 over the stage id and canonical inputs.
+
 std::vector<Value> op_hash_combine(const std::vector<Value>& in, const Stage& st) {
     constexpr uint64_t kPrime = 1099511628211ULL;
     uint64_t h = 1469598103934665603ULL;
@@ -40,7 +43,7 @@ std::vector<Value> op_hash_combine(const std::vector<Value>& in, const Stage& st
     return broadcast(static_cast<int>(h), st.writes.size());
 }
 
-// writes[i] = reads[i % reads.size()]; with no reads, writes the default value.
+
 std::vector<Value> op_copy(const std::vector<Value>& in, const Stage& st) {
     std::vector<Value> out;
     out.reserve(st.writes.size());
@@ -57,7 +60,7 @@ const std::unordered_map<std::string, Op>& registry() {
     return r;
 }
 
-}  // namespace
+}  /*naemspace*/
 
 std::string canonical(const Value& v) {
     return (std::holds_alternative<int>(v) ? "i:" : "s:") + plain(v);

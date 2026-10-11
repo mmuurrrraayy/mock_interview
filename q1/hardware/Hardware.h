@@ -1,17 +1,8 @@
 #pragma once
+struct GPU {
+  bool inUse{false};
+};
 
-#include <cstdint>
-#include <iostream>
-#include <memory>
-
-namespace{
-    struct GPU{
-        bool inUse{false};
-    };
-
-    struct CPU{
-        bool inUse{false};
-    };
-
-    
-}/*namespace*/
+struct CPU {
+  bool inUse{false};
+};

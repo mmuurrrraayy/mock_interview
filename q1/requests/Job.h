@@ -1,32 +1,31 @@
 #ifndef JOB_H
 #define JOB_H
 
-enum class JobState;
+#include <chrono>
+
 
 class Job{
     public:
-        Job(int id, bool processor, int memory, long long duration):
-        id_(id), processor_(processor),memory_(memory),duration_(duration){}
+        Job(std::string id,bool processor, int memory, std::chrono::microseconds duration,std::pair<int,int> dependents):
+        id_(id),processor_(processor),memory_(memory),duration_(duration),dependents_(dependents){}
 
-         int id() const {return id_;}
-        const JobState& state() const {return state_;}
-         long long duration() const {return duration_;}
+        std::string id() const {return id_;}
+
+         std::chrono::microseconds duration() const {return duration_;}
+         int memory() const {return memory_;}
+         bool processor() const { return processor_; } 
+         std::pair<int,int> dependents() const { return dependents_; }
 
     private:
-        int id_;
-        JobState state_;
+        std::string id_;
 
         /*resources needed*/
         bool processor_; /*1: GPU, 0:CPU*/
         int memory_; /*GB*/
-        long long duration_;
+        std::chrono::microseconds duration_;
+        std::pair<int,int> dependents_; /*0 if no dependent, at most 2 dependents*/
 };
 
-enum class JobState{
-    Pending,
-    inProgress,
-    Complete,
-    Failed
-};
+
 
 #endif 
