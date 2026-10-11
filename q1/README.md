@@ -1,15 +1,21 @@
-
 ## Overview
-Implement the functionality to allow for requests to be offloaded to any given HPC cluster or multiple HPC clusters in order of Stages. 
-A client will submit a request: containing an ordered list of Stages. 
-Each stage will have a job for a cluster, declares how long the job will take and the resources needed to complete the job, a list of the store keys
-it reads and writes, and names of operations to computes its outputs from its inputs.
+
+Implement the functionality to allow for requests to be offloaded to any given HPC cluster or multiple HPC clusters in order of Stages.
+
+A client submits a request containing an ordered list of stages. Each stage:
+
+Describes a job for a cluster
+Declares how long the job will take and the resources it needs
+Lists the store keys it reads and writes
+Names the operation that computes its outputs from its inputs
+
 The store is a map of integers and strings.
 
-
 ### Tasks
-1. make it so that jobs that depend on the previous one being complete cannot be completed if its dependents are not completed
-2. Transform requests into jobs. Job request looks as follows:
+
+1. Transform requests into jobs. Job request looks as follows:
+
+```json
 {
   "id": "req-0042",
   "tenant": "tenant-7",
@@ -58,14 +64,22 @@ The store is a map of integers and strings.
     }
   ]
 }
+```
 
-3. Improve indication that the Node has or doesn't have resources
+2. Execute each request ensuring that each stage's dependents have been executed first, reply only once when it's finished
+3. Handle failures and crashes elegantly
 
+## Are you good at this?
+
+4. Run requests with disjoint keys concurrently and handle atomic requests.
+5. Improve indication that the Node has or doesn't have resources
 
 ## Which files to use
-Read	                    Write
-Model.h	                  candidate_coordinator.h
-World.h	
-example1_test.cpp	
-request_parser.h	
-Oracle.h
+
+| Read                | Write             |
+|---------------------|-------------------|
+| `Model.h`           | `coordinator.h`   |
+| `World.h`           | `coordinator.cpp` |
+| `example1_test.cpp` |                   |
+| `request_parser.h`  |                   |
+| `Oracle.h`          |                   |
